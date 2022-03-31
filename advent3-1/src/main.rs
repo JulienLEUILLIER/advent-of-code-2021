@@ -15,14 +15,16 @@ fn main() {
     
     let mut binary_column_amount: Vec<BinaryColumn> = vec![BinaryColumn{zeros: 0, ones: 0}; binary_line_len];
 
-    for line in lines {
-        for index in 0..binary_line_len {
+    let line_length: Vec<usize> = (0usize..binary_line_len).collect();
 
-            let line_char = line.chars().nth(index).expect("No binary on this index");
+    for line in lines {
+        for index in &line_length {
+
+            let line_char = line.chars().nth(*index).expect("No binary on this index");
 
             match line_char {
-                '0' => binary_column_amount[index].zeros += 1,
-                '1' => binary_column_amount[index].ones += 1,
+                '0' => binary_column_amount[*index].zeros += 1,
+                '1' => binary_column_amount[*index].ones += 1,
                 _ => println!("Non-binary number detected"),
             }
         }
