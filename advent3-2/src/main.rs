@@ -1,16 +1,4 @@
 use std::fs;
-fn main() {
-    let data = fs::read_to_string("data.txt").expect("Failed to read file");
-    let lines: Vec<&str> = data.lines().collect();
-
-    let mut oxygen = retain_appropriate_elements(lines.clone(), LifeSupports::Oxygen);
-    let mut co2 = retain_appropriate_elements(lines.clone(), LifeSupports::Co2);
-
-    println!(
-        "{}",
-        i32::from_str_radix(&oxygen.pop().unwrap().to_string(), 2).unwrap()
-    );
-}
 
 enum LifeSupports {
     Oxygen,
@@ -20,22 +8,44 @@ struct BinaryAmount {
     zeros: u16,
     ones: u16,
 }
+fn main() {
+    let data = fs::read_to_string("data.txt").expect("Failed to read file");
+    let lines: Vec<&str> = data.lines().collect();
+
+    let mut oxygen = retain_appropriate_elements(lines.clone(), LifeSupports::Oxygen);
+    let mut co2 = retain_appropriate_elements(lines.clone(), LifeSupports::Co2);
+
+    println!(
+        "{}",
+        i32::from_str_radix(&oxygen.pop().unwrap().to_string(), 2).unwrap() *
+        i32::from_str_radix(&co2.pop().unwrap().to_string(), 2).unwrap(),
+
+    );
+}
+
 
 fn retain_appropriate_elements(mut elements: Vec<&str>, lifesupport: LifeSupports) -> Vec<&str> {
-    let line_length = elements.get(0).expect("Data provided is empty").len();
+    let line_length = &elements[0].len();
 
-    for index in 0..line_length {
+    for index in 0..*line_length {
         let binary_amount = most_common_bit(&elements, index);
 
-        let mut most_common_bit = '1';
-        let mut least_common_bit = '0';
+        if binary_amount.zeros == 0 || binary_amount.ones == 0 {
+            break;
+        }
+        
+        let most_common_bit:char;
+        let least_common_bit:char;
 
-        if binary_amount.zeros > binary_amount.ones {
-            most_common_bit = '0';
-            least_common_bit = '1';
-        } else if binary_amount.zeros <= binary_amount.ones {
-            most_common_bit = '1';
-            least_common_bit = '0';
+        match binary_amount.zeros > binary_amount.ones {
+            true => {
+                most_common_bit = '0';
+                least_common_bit = '1';
+            }
+            false => {
+                most_common_bit = '1';
+                least_common_bit = '0';
+            }
         }
 
         elements.retain(|element| {
@@ -68,6 +78,6 @@ fn most_common_bit(elements: &Vec<&str>, index: usize) -> BinaryAmount {
             _ => (),
         };
     }
-
+    
     binary_amount
 }
